@@ -38,7 +38,6 @@ const PersonalPanel = ({ authUser }) => {
 
   const [showPhotoReviewModal, setShowPhotoReviewModal] = useState(false);
 
-
   const [escalateComment, setEscalateComment] = useState('');
   const [escalateIssue, setEscalateIssue] = useState('');
 
@@ -174,7 +173,12 @@ const PersonalPanel = ({ authUser }) => {
   useEffect(() => {
     if (recoverConfirmed) {
       setRecoverDisabled(true);
-      const timer = setTimeout(() => setRecoverDisabled(false), 60000);
+      const timer = setTimeout(() => {
+        setRecoverDisabled(false);
+        if (user?.id) {
+          updateUser(user.id, { recovery: false });
+        }
+      }, 60000);
       return () => clearTimeout(timer);
     }
   }, [recoverConfirmed]);
@@ -1751,12 +1755,12 @@ const PersonalPanel = ({ authUser }) => {
               </Form.Group>
               <Form.Group className="col-md-3">
                 <Form.Label>Prénoms</Form.Label>
-                <Form.Control type="text" value={user?.name?.split(' ')[0] || ''} disabled />
+                <Form.Control type="text" value={user?.kyc_name?.split(' ')[0] || ''} disabled />
               </Form.Group>
               <Form.Group className="col-md-3 d-flex flex-column">
                 <Form.Label>Nom de famille</Form.Label>
                 <div className="d-flex gap-2">
-                  <Form.Control type="text" value={user?.name?.split(' ')[1] || ''} disabled />
+                  <Form.Control type="text" value={user?.kyc_name?.split(' ')[1] || ''} disabled />
                   <Button variant="info" disabled>Search</Button>
                 </div>
               </Form.Group>

@@ -6,32 +6,29 @@ import TransactionList from '../transactionList';
 import MerchantPanel from '../merchantPanel';
 import AgentPanel from '../agentPanel';
 import { useUserContext } from '../../utils/UserContext';
+import { parse, isToday, format, isValid } from 'date-fns';
 
 const ProfileTabs = ({ authUser }) => {
   const { selectedUser, targetTab, setTargetTab } = useUserContext();
   const [key, setKey] = useState('personal');
 
-  // Appliquer la redirection si un onglet est ciblé
   useEffect(() => {
     if (!selectedUser || !targetTab) return;
-
     const tabExists =
       (targetTab === 'agent' && selectedUser.agent) ||
       (targetTab === 'merchant' && selectedUser.merchant) ||
       targetTab === 'personal' ||
-      targetTab === 'history';
-
+      targetTab === 'history' ||
+      targetTab === 'errorLogs';
     if (tabExists) setKey(targetTab);
   }, [targetTab, selectedUser]);
 
-  // Réinitialiser targetTab après redirection
   useEffect(() => {
     if (targetTab && key === targetTab) {
       setTargetTab(null);
     }
   }, [key, targetTab, setTargetTab]);
 
-  // Sécurité : revenir à personal si l'onglet sélectionné n'est plus valide
   useEffect(() => {
     if (
       selectedUser &&
@@ -79,7 +76,62 @@ const ProfileTabs = ({ authUser }) => {
             </>
           }
         >
-          <UserHistorySection authUser={authUser}/>
+          <UserHistorySection authUser={authUser} />
+        </Tab>
+
+        <Tab
+          eventKey="errorLogs"
+          title={
+            <>
+              Error Logs{' '}
+              {selectedUser?.errorLogs?.length > 0 && (
+                <span className="badge rounded-pill text-white bg-danger">
+                  {selectedUser.errorLogs.length}
+                </span>
+              )}
+            </>
+          }
+        >
+          <div className="p-3">
+            {selectedUser?.errorLogs?.length > 0 ? (
+              <ul className="list-unstyled">
+                {[...selectedUser.errorLogs]
+                  .sort((a, b) => b.createdAt - a.createdAt)
+                  .map((log, index) => {
+                    const parsedDate = parse(log.date, 'dd/MM/yyyy, HH:mm', new Date());
+                    const isValidDate = isValid(parsedDate);
+                    const formattedDate = isValidDate
+                      ? isToday(parsedDate)
+                        ? `Today, ${format(parsedDate, 'HH:mm')}`
+                        : format(parsedDate, 'dd/MM/yyyy, HH:mm')
+                      : 'Date invalide';
+
+                    return (
+                      <li key={index} className="mb-3 border-bottom pb-2">
+                        <div>
+                          <span
+                            className="badge me-2"
+                            style={{
+                              backgroundColor: 'gray',
+                              color: 'white',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {log.app}
+                          </span>
+                          <strong>{formattedDate}</strong>
+                        </div>
+                        <div className="text-muted" style={{ fontSize: '0.9em' }}>
+                          {log.error}
+                        </div>
+                      </li>
+                    );
+                  })}
+              </ul>
+            ) : (
+              <div className="text-center text-muted">No error logs found.</div>
+            )}
+          </div>
         </Tab>
       </Tabs>
     </div>

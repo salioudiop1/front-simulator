@@ -18,7 +18,9 @@ const BlockBanners = ({ blocks: initialBlocks = [], onUpdateBlockReason }) => {
   const [clearDone, setClearDone] = useState(false);
   const [showVerificationFailedModal, setShowVerificationFailedModal] = useState(false);
 
-  const { selectedUser, setSelectedUser } = useUserContext();
+  const { selectedUser, setSelectedUser, updateUser } = useUserContext();
+
+  const [showOverrideModal, setShowOverrideModal] = useState(false);
 
   useEffect(() => {
     setBlocks([...initialBlocks]);
@@ -135,6 +137,18 @@ const BlockBanners = ({ blocks: initialBlocks = [], onUpdateBlockReason }) => {
                   Unblock
                 </Button>
               )}
+              {block.actions?.includes('Overide') && block.title === 'Login PIN attempts exceeded' && (
+                <Button
+                  size="sm"
+                  variant="outline-dark"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowOverrideModal(true);
+                  }}
+                >
+                  Overide
+                </Button>
+              )}
               {block.actions?.includes('Clear') && block.title === 'Security Challenge' && (
                 <Button
                   size="sm"
@@ -161,6 +175,39 @@ const BlockBanners = ({ blocks: initialBlocks = [], onUpdateBlockReason }) => {
           )}
         </div>
       ))}
+
+      <Modal show={showOverrideModal} onHide={() => setShowOverrideModal(false)} dialogClassName="modal-top">
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmation Overide</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Êtes-vous sûr de vouloir lever le blocage ?</p>
+        </Modal.Body>
+        <Modal.Footer className="d-flex justify-content-end">
+          <Button
+            onClick={() => {
+              // Supprimer la restriction côté user
+              const updatedUser = {
+                ...selectedUser,
+                restrictions: selectedUser.restrictions?.filter(
+                  r => r.help !== 'loginPinAttemptsExceeded'
+                ),
+                attemptsLeft: 3
+              };
+              updateUser(selectedUser.id, {
+                restrictions: selectedUser.restrictions?.filter(r => r.help !== 'loginPinAttemptsExceeded'),
+                attemptsLeft: 3,
+              });
+              // Supprimer le bloc dans l'affichage
+              const updatedBlocks = blocks.filter(b => b.help !== 'loginPinAttemptsExceeded');
+              setBlocks(updatedBlocks);
+              setShowOverrideModal(false);
+            }}
+          >
+            Confirmer
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal show={showSecurityModal} onHide={() => setShowSecurityModal(false)} dialogClassName="modal-lg">
         <Modal.Header closeButton>

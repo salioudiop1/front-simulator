@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { generateSecurityQuestions } from '../../utils/securityQuestions';
-
+import { useUserContext } from '../../utils/UserContext';
 
 const RecoverPinModal = ({ show, onClose, user, onRecover }) => {
   const [questions, setQuestions] = useState([]);
   const [questionStates, setQuestionStates] = useState([]);
   const [showFinalConfirm, setShowFinalConfirm] = useState(false);
-  const [recoverDone, setRecoverDone] = useState(false);
   const [showVerificationFailedModal, setShowVerificationFailedModal] = useState(false);
+  const { selectedUser, updateUser } = useUserContext();
 
   const resetQuestions = (user) => {
     const qList = generateSecurityQuestions(user);
     setQuestions(qList);
     setQuestionStates(Array(qList.length).fill(null));
-    setRecoverDone(false);
   };
 
   useEffect(() => {
@@ -36,10 +35,14 @@ const RecoverPinModal = ({ show, onClose, user, onRecover }) => {
   const handleValidation = () => {
     if (correctCount >= 3) {
       onClose();
-      setTimeout(() => setShowFinalConfirm(true), 300);
+      setTimeout(() => {
+        setShowFinalConfirm(true);
+      }, 300);
     } else {
       onClose();
-      setTimeout(() => setShowVerificationFailedModal(true), 300);
+      setTimeout(() => {
+        setShowVerificationFailedModal(true);
+      }, 300);
     }
   };
 
@@ -73,7 +76,8 @@ const RecoverPinModal = ({ show, onClose, user, onRecover }) => {
                           const updated = [...questionStates];
                           updated[realIndex] = true;
                           setQuestionStates(updated);
-                        }}>
+                        }}
+                      >
                         ✔ Oui, correct
                       </Button>
                       <Button
@@ -84,7 +88,8 @@ const RecoverPinModal = ({ show, onClose, user, onRecover }) => {
                           const updated = [...questionStates];
                           updated[realIndex] = false;
                           setQuestionStates(updated);
-                        }}>
+                        }}
+                      >
                         ✘ Non, incorrect
                       </Button>
                     </div>
@@ -97,7 +102,8 @@ const RecoverPinModal = ({ show, onClose, user, onRecover }) => {
             <Button
               variant="primary"
               disabled={!allAnswered}
-              onClick={handleValidation}>
+              onClick={handleValidation}
+            >
               Valider l'identité
             </Button>
           </div>
@@ -110,15 +116,18 @@ const RecoverPinModal = ({ show, onClose, user, onRecover }) => {
           <Modal.Title>Confirmation du Recover PIN</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-end">
-          {recoverDone ? (
+          {selectedUser?.id === user.id && selectedUser?.recovery ? (
             <Alert variant="success" className="text-start">
-              ✅ Succès ! Le client a maintenant 10 minutes pour saisir et confirmer son nouveau code PIN.
+              Succès ! Le client a maintenant 10 minutes pour saisir et confirmer son nouveau code PIN.
             </Alert>
           ) : (
-            <Button variant="primary" onClick={() => {
-              setRecoverDone(true);
-              onRecover();
-            }}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                onRecover();
+                updateUser(user.id, { recovery: true });
+              }}
+            >
               Confirmer le Recover PIN
             </Button>
           )}

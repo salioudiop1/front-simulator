@@ -558,7 +558,7 @@ body {
   height: 750px;
   border: 12px solid rgba(0, 0, 0, 0.6);
   border-radius: 60px;
-  padding: 10px;
+  padding: 5px;
   background: transparent;
   box-shadow: 0 0 15px rgba(103, 58, 183, 0.3), 0 4px 30px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -611,14 +611,13 @@ body {
   background: transparent;
 }
 
-.wave-scroll::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+.wave-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
 }
 
-.wave-scroll:hover::-webkit-scrollbar-thumb {
-  background-color: #999;
+.wave-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
 .wave-scroll::-webkit-scrollbar-track {
@@ -675,6 +674,40 @@ body {
 .react-mobile-picker__item--selected {
   color: black;
   font-weight: bold;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.shake {
+  animation: shake 0.4s;
+}
+
+.disabled-option {
+  color: #bbb !important;
+  pointer-events: none;
+  cursor: default;
+}
+
+.disabled-option i {
+  color: #bbb !important;
 }
 
 /*# sourceMappingURL=style.css.map */

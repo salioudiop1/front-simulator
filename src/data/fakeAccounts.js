@@ -33,18 +33,22 @@ export const fakeUsers = [
     phone: "+221770001122",
     expiryDate: "21/05/2028",
     idNumber: "2 999 2003 00036",
-    idFrontUrl: "/images/recto2.jpeg",
-    idBackUrl:"/images/verso.jpeg",
+    idFrontUrl: "/images/id-front.webp",
+    idBackUrl:"/images/id-front.webp",
     balance: 1500,
     amountPending: 0,
     kyc2: true,
     photo: true,
+    codePin: "1234",
+    recovery: false,
     appVersion: "25.04.04-70bf5c",
     multiAccount: false,
     promoIneligible: false,
     vault: true,
     gifts: false,
     virtualVisa: true, // important pour afficher le bouton
+    attemptsLeft: 3,
+    unlockAttempts: 0,
     virtualVisaCard: {
       balance: 1000,
       last4: "5370",
@@ -171,6 +175,7 @@ export const fakeUsers = [
       ]      
     },
     restrictions: [
+      /*
      {
         title: 'Security Challenge',
         reason: 'Connexion suspecte sur un nouveau appareil',
@@ -180,6 +185,10 @@ export const fakeUsers = [
         color: 'bg-warning text-dark',
         actions: ['Clear'],
       }
+      */
+    ],
+    errorLogs: [
+      
     ],
     vaultBalance: 2000, // en francs CFA
     vaultLocked: true,
@@ -201,6 +210,8 @@ export const fakeUsers = [
     balance: 2700,
     kyc2: false,
     photo: false,
+    codePin: "1234",
+    recovery: false,
     appVersion: "25.03.15",
     multiAccount: false,
     promoIneligible: false,
@@ -209,6 +220,11 @@ export const fakeUsers = [
     virtualVisa: false,
     userHistory: [],
     escalationHistory: [],
+    attemptsLeft: 3,
+    unlockAttempts: 0,
+    errorLogs: [
+      
+    ],
     transactions: [
       {
         type: "transfer",
@@ -253,12 +269,14 @@ export const fakeUsers = [
     id: 3,
     name: "Demba Ndiaye",
     kyc_name: "Demba Ndiaye",
+    codePin: "1234",
+    recovery: false,
     phone: "+221770009999",
     dob: "21/02/2000",
     expiryDate: "21/05/2028",
     idNumber: "2 999 2003 00036",
-    idFrontUrl: "/images/recto2.jpeg",
-    idBackUrl:"/images/verso.jpeg",
+    idFrontUrl: "/images/id-front.webp",
+    idBackUrl:"/images/id-front.webp",
     balance: 0,
     kyc2: true,
     photo: true,
@@ -272,6 +290,11 @@ export const fakeUsers = [
     escalationHistory: [],
     transactions: [],
     billPayCodes: [],
+    attemptsLeft: 3,
+    unlockAttempts: 0,
+    errorLogs: [
+      
+    ],
     agent: {
       id: 'A0001',
       shopName: 'Agent Demba',
@@ -323,6 +346,8 @@ export const fakeUsers = [
     balance: 0,
     kyc2: false,
     photo: false,
+    codePin: "1234",
+    recovery: false,
     appVersion: "25.03.15",
     multiAccount: false,
     promoIneligible: false,
@@ -331,6 +356,11 @@ export const fakeUsers = [
     virtualVisa: false,
     userHistory: [],
     escalationHistory: [],
+    attemptsLeft: 3,
+    unlockAttempts: 0,
+    errorLogs: [
+      
+    ],
     transactions: [
       {
         type: "transfer",

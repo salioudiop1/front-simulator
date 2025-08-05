@@ -15,6 +15,14 @@ import CreditAmountScreen from '../creditAmountScreen';
 import SettingsScreen from '../SettingsScreen';
 import VisaCardDepositScreen from '../visaCardDepositScreen';
 import VisaCardWithdrawScreen from '../visaCardWithdrawScreen';
+import LoginScreen from '../loginScreen';
+import EnterPinScreen from '../enterPinScreen';
+import PhoneCodeScreen from '../phoneCodeScreen';
+import SetNewPinScreen from '../setNewPinScreen';
+import UnlockPinScreen from '../unlockPinScreen';
+import PaymentsScreen from '../paymentsScreen';
+import CanalPaymentScreen from '../canalPaymentScreen';
+import WoyofalPaymentScreen from '../woyofalPaymentScreen';
 
 
 const WaveAppModal = ({ show, onHide }) => {
@@ -41,7 +49,7 @@ const WaveAppModal = ({ show, onHide }) => {
   useEffect(() => {
     if (selectedUser?.id !== prevUserId.current) {
       // ✅ L'utilisateur a vraiment changé
-      setActiveScreen(null); // ou 'home'
+      setActiveScreen('unlock-pin'); // ou 'home'
       setSelectedRecipient(null);
       prevUserId.current = selectedUser?.id;
     }
@@ -60,7 +68,8 @@ const WaveAppModal = ({ show, onHide }) => {
       label: 'Paiements',
       icon: <i className="fa-solid fa-cart-shopping fa-2x" style={{ color: '#f57c00' }}></i>,
       bg: '#fff3e0',
-      disabled: true,
+      disabled: false,
+      onClick: () => setActiveScreen('payments'),
     },
     {
         label: 'Crédit',
@@ -140,6 +149,12 @@ const WaveAppModal = ({ show, onHide }) => {
                         setActiveScreen('amount');
                     }}
                 />
+            ) : activeScreen === 'login' ? (
+                <LoginScreen
+                  onSubmit={(phone, recovery) => {
+                    setActiveScreen(recovery ? 'set-new-pin' : 'enter-pin');
+                  }}
+                />
             ) : activeScreen === 'amount' && selectedRecipient ? (
                 <TransferAmountScreen
                   recipient={selectedRecipient}
@@ -199,11 +214,62 @@ const WaveAppModal = ({ show, onHide }) => {
                 <SettingsScreen
                   onBack={() => setActiveScreen(null)}
                   phone={selectedUser?.phone}
+                  onLogout={() => {
+                    setActiveScreen('login');
+                  }}
                 />
+            ) : activeScreen === 'pay-canal' ? (
+                <CanalPaymentScreen onBack={() => setActiveScreen('payments')} />
+            ) : activeScreen === 'payments' ? (
+                <PaymentsScreen
+                  onBack={() => setActiveScreen(null)}
+                  onSelectBiller={(billerName) => {
+                    if (billerName === 'canal') {
+                      setActiveScreen('pay-canal');
+                    } else if (billerName === 'woyofal') {
+                      setActiveScreen('pay-woyofal');
+                    }
+                  }}
+                />
+            ) : activeScreen === 'pay-woyofal' ? (
+                <WoyofalPaymentScreen onBack={() => setActiveScreen('payments')} />
             ) : activeScreen === 'visa-deposit' ? (
                 <VisaCardDepositScreen onBack={() => setActiveScreen('visa')} />
             ) : activeScreen === 'visa-withdraw' ? (
                 <VisaCardWithdrawScreen onBack={() => setActiveScreen('visa')} />
+            ) : activeScreen === 'enter-pin' ? (
+                <EnterPinScreen
+                  phone={selectedUser?.phone || ''}
+                  onSubmit={(value) => {
+                    if (value === 'set-new-pin') {
+                      setActiveScreen('set-new-pin');
+                    } else {
+                      setActiveScreen('phone-code');
+                    }
+                  }}
+                  onBack={() => setActiveScreen('login')}
+                />
+            ) : activeScreen === 'unlock-pin' ? (
+              <UnlockPinScreen
+                onForgot={() => setActiveScreen('login')}
+                onSubmit={() => {
+                  setActiveScreen(null); // ou 'home' ou autre écran après succès
+                }}
+              />
+            ) : activeScreen === 'set-new-pin' ? (
+                <SetNewPinScreen
+                  onBack={() => setActiveScreen('login')}
+                  onSuccess={() => {
+                    setActiveScreen(null); // ou vers 'home' si tu veux un retour visuel
+                  }}
+                />
+            ) : activeScreen === 'phone-code' ? (
+                <PhoneCodeScreen
+                  onBack={() => setActiveScreen('login')}
+                  onCodeComplete={() => setActiveScreen(null)}
+                  onResend={() => console.log('Resend code...')}
+                  phone={selectedUser?.phone || ''}
+                />
             ) : (
                 <>
                     <div>
@@ -265,8 +331,8 @@ const WaveAppModal = ({ show, onHide }) => {
                                 <QRCodeSVG value={selectedUser?.phone || ''} size={120} />
                                 <div className="mt-1 text-dark"><i class="fa-solid fa-camera"></i> Scanner</div>
                                 </div>
-                                <div style={{ position: 'absolute', right: 10, bottom: 10, fontSize: 40 }}>
-                                    <img src="/images/logo-app.png" alt="" width={60} height={60}/>
+                                <div style={{ position: 'absolute', right: 10, bottom: 5, fontSize: 40 }}>
+                                    <img src="/images/logo-app.png" alt="" width={40} />
                                 </div>
                             </div>
                         </div>
@@ -378,10 +444,11 @@ const WaveAppModal = ({ show, onHide }) => {
 
             
           </div>
-          {/* Footer barre */}
+          {/* Footer barre 
           <div className="d-flex justify-content-center align-items-center py-1" style={{ borderBottomLeftRadius: '30px', borderBottomRightRadius: '30px', background: '#f5f5f5' }}>
               <div style={{ width: 80, height: 5, backgroundColor: '#ccc', borderRadius: 5 }}></div>
             </div>
+            */}
         </div>
         
       </Modal.Body>

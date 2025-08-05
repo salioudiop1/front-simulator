@@ -860,8 +860,6 @@ const TransactionList = ({ transactions, authUser }) => {
                 const recipient = users.find(u => u.phone === txToRefund?.highlight?.phone);
                 const status = isRefundEligible(recipient, txToRefund?.date, txToRefund?.amount);
 
-                console.log(recipient)
-
                 const messages = {
                   danger: {
                     className: 'alert-danger',
