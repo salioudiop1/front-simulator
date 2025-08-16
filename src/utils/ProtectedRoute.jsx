@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
     return <div className="text-center mt-5">⏳ Chargement...</div>;
   }
 
-  if (!user || !user.email.endsWith('@wave.com')) {
+  if (!user || !user.email?.endsWith('@wave.com')) {
     return <Navigate to="/login" />;
   }
 
